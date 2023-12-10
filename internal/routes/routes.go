@@ -20,6 +20,7 @@ func LoadRoutes(db *gorm.DB) *chi.Mux {
 
 	r.Route("/user", func(r chi.Router) {
 		r.Post("/", userHandler.CreateUser)
+		r.Get("/{id}", userHandler.FindUserById)
 	})
 
 	return r

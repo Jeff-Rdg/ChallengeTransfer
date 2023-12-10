@@ -4,7 +4,9 @@ import (
 	"ChallengeBackEndPP/user"
 	"encoding/json"
 	"fmt"
+	"github.com/go-chi/chi"
 	"net/http"
+	"strconv"
 )
 
 type UserHandler struct {
@@ -33,5 +35,32 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result := fmt.Sprintf("User with id %v created successfully", id)
-	RenderJSON(w, http.StatusOK, result, nil)
+	RenderJSON(w, http.StatusCreated, result, nil)
+}
+
+func (h *UserHandler) FindUserById(w http.ResponseWriter, r *http.Request) {
+	param := chi.URLParam(r, "id")
+	var message string
+
+	if param == "" {
+		message = "no id informed"
+		RenderJSON(w, http.StatusBadRequest, message, nil)
+		return
+	}
+
+	id, err := strconv.Atoi(param)
+	if err != nil {
+		message = "error to find user"
+		RenderJSON(w, http.StatusBadRequest, message, err)
+		return
+	}
+
+	res, err := h.UserService.GetById(uint(id))
+	if err != nil {
+		message = "error to find user"
+		RenderJSON(w, http.StatusBadRequest, message, err)
+		return
+	}
+
+	RenderJSON(w, http.StatusOK, "", res)
 }

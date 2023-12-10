@@ -27,11 +27,11 @@ func (s *Service) Create(request Request) (int, error) {
 	return res, nil
 }
 
-func (s *Service) GetById(id uint) (*User, error) {
+func (s *Service) GetById(id uint) (*Response, error) {
 	u, err := s.repo.GetById(id)
 	if err != nil {
 		return nil, err
 	}
 
-	return u, nil
+	return u.MapUserToResponse(), nil
 }

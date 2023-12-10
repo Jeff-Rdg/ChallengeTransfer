@@ -33,7 +33,7 @@ type Repository interface {
 }
 
 type UseCase interface {
-	GetById(id uint) (*User, error)
+	GetById(id uint) (*Response, error)
 	Create(request Request) (int, error)
 }
 
@@ -223,4 +223,19 @@ func isValidEmail(email string) bool {
 	regexpEmail := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 
 	return regexpEmail.MatchString(email)
+}
+
+func (u *User) MapUserToResponse() *Response {
+	return &Response{
+		Model: gorm.Model{
+			ID:        u.ID,
+			CreatedAt: u.CreatedAt,
+			UpdatedAt: u.UpdatedAt,
+			DeletedAt: u.DeletedAt,
+		},
+		FullName:     u.FullName,
+		TaxNumber:    u.TaxNumber,
+		Email:        u.Email,
+		IsShopkeeper: u.IsShopkeeper,
+	}
 }
