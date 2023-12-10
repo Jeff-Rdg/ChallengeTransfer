@@ -25,7 +25,7 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := h.UserService.Create(req.FullName, req.TaxNumber, req.Email, req.Password, req.IsShopkeeper)
+	id, err := h.UserService.Create(req)
 	if err != nil {
 		message = "error to create user"
 		RenderJSON(w, http.StatusBadRequest, message, err)

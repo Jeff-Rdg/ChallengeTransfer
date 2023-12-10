@@ -8,13 +8,13 @@ func NewService(r Repository) *Service {
 	return &Service{repo: r}
 }
 
-func (s *Service) Create(fullname, taxnumber, email, password string, isshopkeeper bool) (int, error) {
-	newUser, err := NewUser(fullname, taxnumber, email, password, isshopkeeper)
+func (s *Service) Create(request Request) (int, error) {
+	newUser, err := NewUser(request)
 	if err != nil {
 		return 0, err
 	}
 
-	res, err := s.repo.FindByTaxNumberOrEmail(taxnumber, email)
+	res, err := s.repo.FindByTaxNumberOrEmail(request.TaxNumber, request.Email)
 	if err != nil {
 		return res, err
 	}

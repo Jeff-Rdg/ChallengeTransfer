@@ -34,7 +34,7 @@ type Repository interface {
 
 type UseCase interface {
 	GetById(id uint) (*User, error)
-	Create(fullname, taxnumber, email, password string, isshopkeeper bool) (int, error)
+	Create(request Request) (int, error)
 }
 
 type User struct {
@@ -59,16 +59,16 @@ func NewUser(fullname, taxnumber, email, password string, isshopkeeper bool) (*U
 	if err != nil {
 		return nil, err
 	}
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	hash, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
 	}
 	return &User{
-		FullName:     fullname,
-		TaxNumber:    taxnumber,
-		Email:        email,
+		FullName:     request.FullName,
+		TaxNumber:    request.TaxNumber,
+		Email:        request.Email,
 		Password:     string(hash),
-		IsShopkeeper: isshopkeeper,
+		IsShopkeeper: request.IsShopkeeper,
 	}, nil
 }
 
