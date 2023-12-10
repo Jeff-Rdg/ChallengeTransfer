@@ -2,11 +2,7 @@ package main
 
 import (
 	"ChallengeBackEndPP/configs"
-	"ChallengeBackEndPP/internal/handler"
-	"ChallengeBackEndPP/internal/repository"
-	"ChallengeBackEndPP/user"
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
+	"ChallengeBackEndPP/internal/routes"
 	"net/http"
 )
 
@@ -21,17 +17,7 @@ func main() {
 		panic(err)
 	}
 
-	userDb := repository.NewUser(db)
-	userService := user.NewService(userDb)
-	userHandler := handler.NewUserHandler(userService)
-
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
-
-	r.Route("/user", func(r chi.Router) {
-		r.Post("/", userHandler.CreateUser)
-	})
+	r := routes.LoadRoutes(db)
 
 	http.ListenAndServe(":8000", r)
 }
