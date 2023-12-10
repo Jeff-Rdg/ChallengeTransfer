@@ -3,6 +3,7 @@ package handlers
 import (
 	"ChallengeBackEndPP/user"
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -16,20 +17,21 @@ func NewUserHandler(service user.UseCase) *UserHandler {
 
 func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var req user.Request
+	var message string
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("JSON deserialization error"))
+		message = "JSON deserialization error"
+		RenderJSON(w, http.StatusBadRequest, message, nil)
 		return
 	}
 
-	_, err = h.UserService.Create(req.FullName, req.TaxNumber, req.Email, req.Password, req.IsShopkeeper)
+	id, err := h.UserService.Create(req.FullName, req.TaxNumber, req.Email, req.Password, req.IsShopkeeper)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
+		message = "error to create user"
+		RenderJSON(w, http.StatusBadRequest, message, err)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("User created successfully"))
+	result := fmt.Sprintf("User with id %v created successfully", id)
+	RenderJSON(w, http.StatusOK, result, nil)
 }

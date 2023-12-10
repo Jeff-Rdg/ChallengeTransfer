@@ -2,6 +2,7 @@ package user
 
 import (
 	"errors"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"regexp"
 	"strconv"
@@ -58,13 +59,22 @@ func NewUser(fullname, taxnumber, email, password string, isshopkeeper bool) (*U
 	if err != nil {
 		return nil, err
 	}
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
 	return &User{
 		FullName:     fullname,
 		TaxNumber:    taxnumber,
 		Email:        email,
-		Password:     password,
+		Password:     string(hash),
 		IsShopkeeper: isshopkeeper,
 	}, nil
+}
+
+func (u *User) ValidatePassword(password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
+	return err == nil
 }
 
 func validateUser(fullname, taxnumber, email, password string, isshopkeeper bool) error {

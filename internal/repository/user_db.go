@@ -8,7 +8,7 @@ import (
 
 var (
 	NoRowsAffectedErr = errors.New("no rows affected")
-	ExistUserErr      = errors.New("there are already users with the taxnumber or email provided")
+	ExistUserErr      = errors.New("there are already users with the tax_number or email provided")
 )
 
 type UserDb struct {
@@ -31,7 +31,7 @@ func (us *UserDb) Create(u *user.User) (int, error) {
 		return 0, insert.Error
 	}
 
-	return 1, nil
+	return int(u.ID), nil
 }
 
 func (us *UserDb) GetById(id uint) (*user.User, error) {
