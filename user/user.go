@@ -12,6 +12,25 @@ var (
 	PasswordNilErr  = errors.New("password is required")
 )
 
+type Reader interface {
+	GetById(id uint) (*User, error)
+	FindByTaxNumberOrEmail(taxNumber, email string) (int, error)
+}
+
+type Writer interface {
+	Create(u *User) (int, error)
+}
+
+type Repository interface {
+	Reader
+	Writer
+}
+
+type UseCase interface {
+	GetById(id uint) (*User, error)
+	Create(fullname, taxnumber, email, password string, isshopkeeper bool) (int, error)
+}
+
 type User struct {
 	gorm.Model
 	FullName     string `json:"full_name"`
@@ -62,23 +81,4 @@ func validateUser(fullname, taxnumber, email, password string) error {
 		return errors.Join(errs...)
 	}
 	return nil
-}
-
-type Reader interface {
-	GetById(id uint) (*User, error)
-	FindByTaxNumberOrEmail(taxNumber, email string) (int, error)
-}
-
-type Writer interface {
-	Create(u *User) (int, error)
-}
-
-type Repository interface {
-	Reader
-	Writer
-}
-
-type UseCase interface {
-	GetById(id uint) (*User, error)
-	Create(fullname, taxnumber, email, password string, isshopkeeper bool) (int, error)
 }
