@@ -54,8 +54,16 @@ type Request struct {
 	IsShopkeeper bool   `json:"is_shopkeeper"`
 }
 
-func NewUser(fullname, taxnumber, email, password string, isshopkeeper bool) (*User, error) {
-	err := validateUser(fullname, taxnumber, email, password, isshopkeeper)
+type Response struct {
+	gorm.Model
+	FullName     string `json:"full_name"`
+	TaxNumber    string `json:"tax_number"`
+	Email        string `json:"email"`
+	IsShopkeeper bool   `json:"is_shopkeeper"`
+}
+
+func NewUser(request Request) (*User, error) {
+	err := validateUser(request.FullName, request.TaxNumber, request.Email, request.Password, request.IsShopkeeper)
 	if err != nil {
 		return nil, err
 	}
