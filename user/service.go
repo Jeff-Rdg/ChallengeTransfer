@@ -35,3 +35,6 @@ func (s *Service) GetById(id uint) (*Response, error) {
 
 	return u.MapUserToResponse(), nil
 }
+
+// todo: implementar serviço para realizar transferência
+// todo: adicionar método para adicionar dinheiro
