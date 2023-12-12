@@ -1,6 +1,7 @@
 package user
 
 import (
+	"ChallengeBackEndPP/wallet"
 	"errors"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -39,11 +40,12 @@ type UseCase interface {
 
 type User struct {
 	gorm.Model
-	FullName     string `json:"full_name"`
-	TaxNumber    string `json:"tax_number" gorm:"not null"`
-	Email        string `json:"email" gorm:"not null"`
-	Password     string `json:"password"`
-	IsShopkeeper bool   `json:"is_shopkeeper"`
+	FullName     string        `json:"full_name"`
+	TaxNumber    string        `json:"tax_number" gorm:"not null"`
+	Email        string        `json:"email" gorm:"not null"`
+	Password     string        `json:"password"`
+	IsShopkeeper bool          `json:"is_shopkeeper"`
+	Wallet       wallet.Wallet `gorm:"foreignKey:UserID"`
 }
 
 type Request struct {
