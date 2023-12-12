@@ -1,7 +1,6 @@
 package wallet
 
 import (
-	"ChallengeBackEndPP/user"
 	"errors"
 )
 
@@ -10,32 +9,26 @@ var (
 )
 
 type Service struct {
-	repo     Repository
-	userRepo user.Repository
+	repo Repository
 }
 
-func NewService(r Repository, ur user.Repository) *Service {
-	return &Service{repo: r, userRepo: ur}
+func NewService(r Repository) *Service {
+	return &Service{repo: r}
 }
 
 func (s *Service) Create(request Request) (int, error) {
-	_, err := s.userRepo.GetById(request.UserID)
-	if err != nil {
-		return 0, err
-	}
-
 	// verificar se o userId ja possui carteira
 	haveWallet, _ := s.repo.GetWalletByUserId(request.UserID)
 	if haveWallet != nil {
 		return 0, InvalidUserIdErr
 	}
 
-	newWaller, err := NewWallet(request)
+	newWallet, err := NewWallet(request)
 	if err != nil {
 		return 0, err
 	}
 
-	res, err := s.repo.Create(newWaller)
+	res, err := s.repo.Create(newWallet)
 	if err != nil {
 		return res, err
 	}
