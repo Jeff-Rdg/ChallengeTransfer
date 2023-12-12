@@ -1,7 +1,6 @@
 package user
 
 import (
-	"ChallengeBackEndPP/wallet"
 	"errors"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -40,12 +39,16 @@ type UseCase interface {
 
 type User struct {
 	gorm.Model
-	FullName     string        `json:"full_name"`
-	TaxNumber    string        `json:"tax_number" gorm:"not null"`
-	Email        string        `json:"email" gorm:"not null"`
-	Password     string        `json:"password"`
-	IsShopkeeper bool          `json:"is_shopkeeper"`
-	Wallet       wallet.Wallet `gorm:"foreignKey:UserID"`
+	FullName     string `json:"full_name"`
+	TaxNumber    string `json:"tax_number" gorm:"not null"`
+	Email        string `json:"email" gorm:"not null"`
+	Password     string `json:"password"`
+	IsShopkeeper bool   `json:"is_shopkeeper"`
+	Wallet       Wallet `json:"wallet"`
+}
+
+type Wallet struct {
+	Balance float64 `json:"balance"`
 }
 
 type Request struct {
@@ -54,6 +57,7 @@ type Request struct {
 	Email        string `json:"email"`
 	Password     string `json:"password"`
 	IsShopkeeper bool   `json:"is_shopkeeper"`
+	Wallet       Wallet `json:"wallet"`
 }
 
 type Response struct {
@@ -62,6 +66,7 @@ type Response struct {
 	TaxNumber    string `json:"tax_number"`
 	Email        string `json:"email"`
 	IsShopkeeper bool   `json:"is_shopkeeper"`
+	Wallet       Wallet `json:"wallet"`
 }
 
 func NewUser(request Request) (*User, error) {
@@ -79,6 +84,7 @@ func NewUser(request Request) (*User, error) {
 		Email:        request.Email,
 		Password:     string(hash),
 		IsShopkeeper: request.IsShopkeeper,
+		Wallet:       request.Wallet,
 	}, nil
 }
 
@@ -239,5 +245,6 @@ func (u *User) MapUserToResponse() *Response {
 		TaxNumber:    u.TaxNumber,
 		Email:        u.Email,
 		IsShopkeeper: u.IsShopkeeper,
+		Wallet:       u.Wallet,
 	}
 }
