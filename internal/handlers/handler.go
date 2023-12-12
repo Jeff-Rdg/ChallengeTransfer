@@ -9,25 +9,31 @@ import (
 type Response struct {
 	Message  string      `json:"message,omitempty"`
 	Response interface{} `json:"response,omitempty"`
+	Error    interface{} `json:"error,omitempty"`
 }
 
 func RenderJSON(w http.ResponseWriter, statusCode int, message string, data interface{}) {
 	var result interface{}
+	var response Response
 
 	switch data.(type) {
 	case error:
 		value, ok := data.(error)
-		if !ok {
+		if ok {
+			result = errorsToList(value)
+		} else {
 			result = data
 		}
-		result = errorsToList(value)
+		response = Response{
+			Message: message,
+			Error:   result,
+		}
 	default:
 		result = data
-	}
-
-	response := Response{
-		Message:  message,
-		Response: result,
+		response = Response{
+			Message:  message,
+			Response: result,
+		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
