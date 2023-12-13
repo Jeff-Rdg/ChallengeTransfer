@@ -28,13 +28,29 @@ func (s *Service) Create(request Request) (int, error) {
 }
 
 func (s *Service) GetById(id uint) (*Response, error) {
-	u, err := s.repo.GetById(id)
+	user, err := s.repo.GetById(id)
 	if err != nil {
 		return nil, err
 	}
 
-	return u.MapUserToResponse(), nil
+	return user.MapUserToResponse(), nil
+}
+
+func (s *Service) AddMoney(id uint, value float64) error {
+	user, err := s.repo.GetById(id)
+	if err != nil {
+		return err
+	}
+	if user.IsShopkeeper {
+		return InvalidAddBalanceErr
+	}
+	user.Balance += value
+	_, err = s.repo.Update(user)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // todo: implementar serviço para realizar transferência
-// todo: adicionar método para adicionar dinheiro

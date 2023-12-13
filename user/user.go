@@ -9,13 +9,14 @@ import (
 )
 
 var (
-	FullNameNilErr      = errors.New("full_name is required")
-	TaxNumberNilErr     = errors.New("tax_number is required")
-	EmailNilErr         = errors.New("email is required")
-	InvalidEmailErr     = errors.New("email invalid")
-	PasswordNilErr      = errors.New("password is required")
-	FullNameInvalidErr  = errors.New("full_name must not contain special characters or numbers")
-	TaxNumberInvalidErr = errors.New("tax_number invalid")
+	FullNameNilErr       = errors.New("full_name is required")
+	TaxNumberNilErr      = errors.New("tax_number is required")
+	EmailNilErr          = errors.New("email is required")
+	InvalidEmailErr      = errors.New("email invalid")
+	PasswordNilErr       = errors.New("password is required")
+	FullNameInvalidErr   = errors.New("full_name must not contain special characters or numbers")
+	TaxNumberInvalidErr  = errors.New("tax_number invalid")
+	InvalidAddBalanceErr = errors.New("shopkeeper is not allowed to add money")
 )
 
 type Reader interface {
@@ -25,6 +26,7 @@ type Reader interface {
 
 type Writer interface {
 	Create(u *User) (int, error)
+	Update(u *User) (int, error)
 }
 
 type Repository interface {
@@ -35,6 +37,7 @@ type Repository interface {
 type UseCase interface {
 	GetById(id uint) (*Response, error)
 	Create(request Request) (int, error)
+	AddMoney(id uint, value float64) error
 }
 
 type User struct {
@@ -44,7 +47,7 @@ type User struct {
 	Email        string `json:"email" gorm:"not null"`
 	Password     string `json:"password"`
 	IsShopkeeper bool   `json:"is_shopkeeper"`
-	Wallet       Wallet `json:"wallet"`
+	Wallet       `json:"wallet"`
 }
 
 type Wallet struct {
@@ -57,7 +60,6 @@ type Request struct {
 	Email        string `json:"email"`
 	Password     string `json:"password"`
 	IsShopkeeper bool   `json:"is_shopkeeper"`
-	Wallet       Wallet `json:"wallet"`
 }
 
 type Response struct {
@@ -84,7 +86,7 @@ func NewUser(request Request) (*User, error) {
 		Email:        request.Email,
 		Password:     string(hash),
 		IsShopkeeper: request.IsShopkeeper,
-		Wallet:       request.Wallet,
+		Wallet:       Wallet{},
 	}, nil
 }
 

@@ -58,3 +58,16 @@ func (us *UserDb) FindByTaxNumberOrEmail(taxNumber, email string) (int, error) {
 
 	return 1, nil
 }
+
+func (us *UserDb) Update(u *user.User) (int, error) {
+	update := us.Db.Save(u)
+	if update.RowsAffected == 0 {
+		return 0, NoRowsAffectedErr
+	}
+
+	if update.Error != nil {
+		return 0, update.Error
+	}
+
+	return int(u.ID), nil
+}
