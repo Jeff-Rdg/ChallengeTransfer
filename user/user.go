@@ -71,6 +71,10 @@ type Response struct {
 	Wallet       Wallet `json:"wallet"`
 }
 
+type AddValueRequest struct {
+	Value float64 `json:"value"`
+}
+
 func NewUser(request Request) (*User, error) {
 	err := validateUser(request.FullName, request.TaxNumber, request.Email, request.Password, request.IsShopkeeper)
 	if err != nil {

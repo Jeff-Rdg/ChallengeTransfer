@@ -64,3 +64,39 @@ func (h *UserHandler) FindUserById(w http.ResponseWriter, r *http.Request) {
 
 	RenderJSON(w, http.StatusOK, "", res)
 }
+
+func (h *UserHandler) AddMoney(w http.ResponseWriter, r *http.Request) {
+	param := chi.URLParam(r, "id")
+	var message string
+	var req user.AddValueRequest
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		message = "JSON deserialization error"
+		RenderJSON(w, http.StatusBadRequest, message, nil)
+		return
+	}
+
+	if param == "" {
+		message = "no id informed"
+		RenderJSON(w, http.StatusBadRequest, message, nil)
+		return
+	}
+
+	id, err := strconv.Atoi(param)
+	if err != nil {
+		message = "error to add money"
+		RenderJSON(w, http.StatusBadRequest, message, err)
+		return
+	}
+
+	err = h.UserService.AddMoney(uint(id), req.Value)
+	if err != nil {
+		message = "error to add money"
+		RenderJSON(w, http.StatusBadRequest, message, err)
+		return
+	}
+
+	result := fmt.Sprintf("User with id %v updated successfully", id)
+	RenderJSON(w, http.StatusCreated, result, nil)
+}
