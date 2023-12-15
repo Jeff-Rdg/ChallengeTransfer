@@ -43,8 +43,8 @@ type UseCase interface {
 type User struct {
 	gorm.Model
 	FullName     string `json:"full_name"`
-	TaxNumber    string `json:"tax_number" gorm:"not null"`
-	Email        string `json:"email" gorm:"not null"`
+	TaxNumber    string ` gorm:"unique" json:"tax_number"`
+	Email        string `gorm:"unique" json:"email" `
 	Password     string `json:"password"`
 	IsShopkeeper bool   `json:"is_shopkeeper"`
 	Wallet       `json:"wallet"`
@@ -65,8 +65,8 @@ type Request struct {
 type Response struct {
 	gorm.Model
 	FullName     string `json:"full_name"`
-	TaxNumber    string `json:"tax_number"`
-	Email        string `json:"email"`
+	TaxNumber    string `json:"tax_number" gorm:"unique"`
+	Email        string `json:"email" gorm:"unique"`
 	IsShopkeeper bool   `json:"is_shopkeeper"`
 	Wallet       Wallet `json:"wallet"`
 }

@@ -23,12 +23,13 @@ func NewUser(db *gorm.DB) *UserDb {
 
 func (us *UserDb) Create(u *user.User) (int, error) {
 	insert := us.Db.Create(&u)
-	if insert.RowsAffected == 0 {
-		return 0, NoRowsAffectedErr
-	}
 
 	if insert.Error != nil {
 		return 0, insert.Error
+	}
+
+	if insert.RowsAffected == 0 {
+		return 0, NoRowsAffectedErr
 	}
 
 	return int(u.ID), nil
