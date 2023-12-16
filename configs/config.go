@@ -1,6 +1,7 @@
 package configs
 
 import (
+	"ChallengeBackEndPP/transfer"
 	"ChallengeBackEndPP/user"
 	"github.com/glebarez/sqlite"
 	"github.com/go-chi/jwtauth"
@@ -48,7 +49,7 @@ func LoadDatabase() (*gorm.DB, error) {
 		return nil, err
 	}
 
-	err = db.AutoMigrate(&user.User{})
+	err = db.AutoMigrate(&user.User{}, &transfer.Transfer{})
 	if err != nil {
 		return nil, err
 	}
