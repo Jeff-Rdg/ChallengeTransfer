@@ -6,9 +6,10 @@ import (
 )
 
 var (
-	SenderIdNilErr   = errors.New("sender_id is required")
-	ReceiverIdNilErr = errors.New("receiver_id is required")
-	ValueNilErr      = errors.New("value is required")
+	SenderIdNilErr     = errors.New("sender_id is required")
+	ReceiverIdNilErr   = errors.New("receiver_id is required")
+	ValueInvalidErr    = errors.New("invalid value")
+	InvalidTransferErr = errors.New("invalid transfer")
 )
 
 type Transfer struct {
@@ -64,8 +65,11 @@ func validateTransfer(senderId, receiverId uint, value float64) error {
 	if receiverId == 0 {
 		errs = append(errs, ReceiverIdNilErr)
 	}
-	if value == 0 {
-		errs = append(errs, ValueNilErr)
+	if senderId == receiverId {
+		errs = append(errs, InvalidTransferErr)
+	}
+	if value <= 0 {
+		errs = append(errs, ValueInvalidErr)
 	}
 
 	if len(errs) > 0 {
