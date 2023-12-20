@@ -49,7 +49,6 @@ func (s *Service) Create(request Request) (int, error) {
 	sender.Balance -= request.Value
 	receiver.Balance += request.Value
 
-	// implementar transações
 	s.db.Transaction(func(tx *gorm.DB) error {
 		err = tx.Save(&sender).Error
 		if err != nil {
@@ -69,25 +68,5 @@ func (s *Service) Create(request Request) (int, error) {
 		return nil
 	})
 
-	/*
-		tx := s.db.Begin()
-		_, err = s.userRepo.Update(sender)
-		if err != nil {
-			tx.Rollback()
-			return 0, err
-		}
-		_, err = s.userRepo.Update(receiver)
-		if err != nil {
-			tx.Rollback()
-			return 0, err
-		}
-
-		transactionId, err := s.repo.Create(transfer)
-		if err != nil {
-			tx.Rollback()
-			return 0, err
-		}
-		tx.Commit()
-	*/
 	return int(transfer.ID), nil
 }
