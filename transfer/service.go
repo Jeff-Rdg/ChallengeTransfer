@@ -51,39 +51,43 @@ func (s *Service) Create(request Request) (int, error) {
 
 	// implementar transações
 	s.db.Transaction(func(tx *gorm.DB) error {
-	err = tx.Updates(&sender)
+		err = tx.Save(&sender).Error
 		if err != nil {
-		return err	
+			return err
 		}
-	err = tx.Updates(&receiver)
-		if err != nil {
-		return err	
-		}
-	err = tx.Create(&transfer).Error
-		if err != nil {
-		return err	
-		}
-	})
-	
-	/*
-	tx := s.db.Begin()
-	_, err = s.userRepo.Update(sender)
-	if err != nil {
-		tx.Rollback()
-		return 0, err
-	}
-	_, err = s.userRepo.Update(receiver)
-	if err != nil {
-		tx.Rollback()
-		return 0, err
-	}
 
-	transactionId, err := s.repo.Create(transfer)
-	if err != nil {
-		tx.Rollback()
-		return 0, err
-	}
-	tx.Commit()
- */
+		err = tx.Save(&receiver).Error
+		if err != nil {
+			return err
+		}
+
+		err = tx.Create(&transfer).Error
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	/*
+		tx := s.db.Begin()
+		_, err = s.userRepo.Update(sender)
+		if err != nil {
+			tx.Rollback()
+			return 0, err
+		}
+		_, err = s.userRepo.Update(receiver)
+		if err != nil {
+			tx.Rollback()
+			return 0, err
+		}
+
+		transactionId, err := s.repo.Create(transfer)
+		if err != nil {
+			tx.Rollback()
+			return 0, err
+		}
+		tx.Commit()
+	*/
 	return int(transfer.ID), nil
 }
