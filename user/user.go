@@ -19,25 +19,11 @@ var (
 	InvalidAddBalanceErr = errors.New("shopkeeper is not allowed to add money")
 )
 
-type Reader interface {
-	GetById(id uint) (*User, error)
-	FindByTaxNumberOrEmail(taxNumber, email string) (int, error)
-}
-
-type Writer interface {
-	Create(u *User) (int, error)
-	Update(u *User) (int, error)
-}
-
-type Repository interface {
-	Reader
-	Writer
-}
-
 type UseCase interface {
 	GetById(id uint) (*Response, error)
 	Create(request Request) (int, error)
 	AddMoney(id uint, value float64) error
+	Update(id uint, update RequestUpdate) (int, error)
 }
 
 type User struct {
@@ -60,6 +46,13 @@ type Request struct {
 	Email        string `json:"email"`
 	Password     string `json:"password"`
 	IsShopkeeper bool   `json:"is_shopkeeper"`
+}
+
+type RequestUpdate struct {
+	FullName  string `json:"full_name"`
+	TaxNumber string `json:"tax_number"`
+	Email     string `json:"email"`
+	Wallet    `json:"wallet"`
 }
 
 type Response struct {
@@ -241,16 +234,35 @@ func isValidEmail(email string) bool {
 
 func (u *User) MapUserToResponse() *Response {
 	return &Response{
-		Model: gorm.Model{
-			ID:        u.ID,
-			CreatedAt: u.CreatedAt,
-			UpdatedAt: u.UpdatedAt,
-			DeletedAt: u.DeletedAt,
-		},
+		Model:        u.Model,
 		FullName:     u.FullName,
 		TaxNumber:    u.TaxNumber,
 		Email:        u.Email,
 		IsShopkeeper: u.IsShopkeeper,
 		Wallet:       u.Wallet,
+	}
+}
+
+func (u *User) UpdateDiffFields(request RequestUpdate) {
+	if request.TaxNumber != "" {
+		if request.TaxNumber != u.TaxNumber {
+			u.TaxNumber = request.TaxNumber
+		}
+	}
+	if request.Email != "" {
+		if request.Email != u.Email {
+			u.Email = request.Email
+		}
+	}
+
+	if request.FullName != "" {
+		if request.FullName != u.FullName {
+			u.FullName = request.FullName
+		}
+	}
+	if request.Balance != 0 {
+		if request.Balance != u.Balance {
+			u.Balance = request.Balance
+		}
 	}
 }
