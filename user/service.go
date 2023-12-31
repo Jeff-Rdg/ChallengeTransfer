@@ -18,13 +18,22 @@ func NewService(db *gorm.DB) *Service {
 }
 
 func (s *Service) GetById(id uint) (*Response, error) {
+	user, err := s.findById(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return user.MapUserToResponse(), nil
+}
+
+func (s *Service) findById(id uint) (*User, error) {
 	var user *User
 	err := s.Db.First(&user, id).Error
 	if err != nil {
 		return nil, err
 	}
 
-	return user.MapUserToResponse(), nil
+	return user, nil
 }
 
 func (s *Service) Create(request Request) (int, error) {
@@ -46,11 +55,11 @@ func (s *Service) Create(request Request) (int, error) {
 }
 
 func (s *Service) Update(id uint, request RequestUpdate) (int, error) {
-	var user *User
-	err := s.Db.First(&user, id).Error
+	user, err := s.findById(id)
 	if err != nil {
 		return 0, err
 	}
+
 	user.UpdateDiffFields(request)
 	err = s.Db.Save(&user).Error
 	if err != nil {
@@ -61,8 +70,7 @@ func (s *Service) Update(id uint, request RequestUpdate) (int, error) {
 }
 
 func (s *Service) AddMoney(id uint, value float64) error {
-	var user *User
-	err := s.Db.First(&user, id).Error
+	user, err := s.findById(id)
 	if err != nil {
 		return err
 	}
